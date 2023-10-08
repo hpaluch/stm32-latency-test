@@ -25,6 +25,24 @@ From Scope (Digilent Analog Discovery 2) we can see that:
   impressive 20 MHz
 - Servicing interrupt takes around 1.32 micro-seconds - which is very good.
 
+Why GPIO is not faster?
+* according to [DS11532][DS11532] page 49:
+
+  > A fast I/O handling allows a maximum I/O toggling up to 108 MHz.
+
+* but looking to [RM0410][RM0410] page 91,
+  Table 7. Number of wait states according to CPU clock (HCLK) frequency
+
+  The Program FLASH is capable to handle only up to 30 MHz without wait states.
+  For 216 MHz there are at least 7 Wait states (8 CPU cycles)
+
+* To solve this problem one has to:
+  - move GPIO code from slow Flash to TC (Time Critical) RAM
+  - access directly GPIO registers (this example calls HAL routines which
+    has significant overhead)
+
+* However my 100 MHz scope is unable to handle such speed so I have no plan to try it.
+
 # Setup
 
 Required Hardware:
@@ -71,6 +89,8 @@ c:\Ac6\SystemWorkbench\plugins\fr.ac6.mcu.externaltools.arm-none.win32_1.17.0.20
 * Please see my [Getting started with ST NUCLEO F767ZI Board][Getting started with ST NUCLEO F767ZI Board]
   for introduction.
 
+[DS11532]: https://www.st.com/resource/en/datasheet/stm32f767zi.pdf
+[RM0410]: https://www.st.com/resource/en/reference_manual/rm0410-stm32f76xxx-and-stm32f77xxx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf
 [STM32CubeF7]: https://www.st.com/en/embedded-software/stm32cubef7.html
 [System Workbench for STM32]: http://www.openstm32.org/System%2BWorkbench%2Bfor%2BSTM32
 [STM32CubeMX]: https://www.st.com/content/st_com/en/products/development-tools/software-development-tools/stm32-software-development-tools/stm32-configurators-and-code-generators/stm32cubemx.html
