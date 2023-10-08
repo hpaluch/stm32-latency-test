@@ -36,6 +36,13 @@ Why GPIO is not faster?
   The Program FLASH is capable to handle only up to 30 MHz without wait states.
   For 216 MHz there are at least 7 Wait states (8 CPU cycles)
 
+  - you can find used latency in `main.c` on this line:
+    ```c
+    if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7) != HAL_OK)
+    { /* ... */}
+    ```
+    - so here are set 7 WS (8 cycles)
+
 * To solve this problem one has to:
   - move GPIO code from slow Flash to TC (Time Critical) RAM
   - access directly GPIO registers (this example calls HAL routines which
